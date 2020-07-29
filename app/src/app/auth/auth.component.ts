@@ -3,6 +3,9 @@ import { NgForm } from '@angular/forms';
 import { AuthService, AuthResponseData } from './auth.service';
 import { Observable } from 'rxjs';
 import { Router } from '@angular/router';
+import { Store } from '@ngrx/store';
+import * as fromApp from '../store/app.reducer';
+import * as AuthActions from './store/auth.actions';
 
 @Component({
     selector: 'app-auth',
@@ -14,7 +17,8 @@ export class AuthComponent {
     error: string = null;
 
     constructor(private authService: AuthService,
-                private router: Router) {}
+                private router: Router,
+                private store: Store<fromApp.AppState>) {}
 
 
     onHandleError() {
@@ -38,7 +42,8 @@ export class AuthComponent {
     this.isLoading = true;
 
     if (this.isLoginMode) {
-        authObservable = this.authService.login(email, password);
+        //authObservable = this.authService.login(email, password);
+        this.store.dispatch(new AuthActions.LoginStart({email: email, password: password}));
     } else {
         authObservable = this.authService.signup(email, password);
     }
