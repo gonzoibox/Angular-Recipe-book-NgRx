@@ -5,6 +5,7 @@ export const AUTHENTICATE_SUCCESS = '[Auth] AUTHENTICATE_SUCCESS';
 export const AUTHENTICATE_FAIL = '[Auth] AUTHENTICATE_FAIL';
 export const SIGNUP_START = '[Auth] SIGNUP_START';
 export const SIGNUP = '[Auth] SIGNUP';
+export const CLEAR_ERROR = '[Auth] CLEAR_ERROR';
 export const LOGOUT = '[Auth] LOGOUT';
 
 export class AthenticateSuccess implements Action {
@@ -42,9 +43,15 @@ export class SignupStart implements Action {
     constructor(public payload: {email: string, password: string}) {}
 }
 
+export class ClearError implements Action {
+    readonly type = CLEAR_ERROR;
+}
+
 export type AuthActions = 
 | AthenticateSuccess 
 | Logout 
 | LoginStart 
 | AthenticateFail 
-| SignupStart;
+| SignupStart
+| ClearError
+;
