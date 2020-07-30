@@ -59,6 +59,7 @@ export function authReducer (
                 ...state,
                 authError: null
             };
+        
             
         default:
             return state;
