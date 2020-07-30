@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { catchError, tap } from 'rxjs/operators';
-import { throwError, BehaviorSubject } from 'rxjs';
+import { throwError } from 'rxjs';
 import { User } from './user.model';
 import { Router } from '@angular/router';
 import { environment } from '../../environments/environment';
@@ -20,7 +20,6 @@ export interface AuthResponseData {
 
 @Injectable({providedIn: 'root'})
 export class AuthService {
-    //user = new BehaviorSubject<User>(null);
     private tokenExpirationTimer: any;
 
     constructor(private http: HttpClient,
@@ -82,8 +81,7 @@ export class AuthService {
             );
 
             if (loadedUser.token) {
-                //this.user.next(loadedUser);
-                this.store.dispatch(new AuthActions.Login({
+                this.store.dispatch(new AuthActions.AthenticateSuccess({
                     email: loadedUser.email,
                     userId: loadedUser.id,
                     token: loadedUser.token,
@@ -97,7 +95,6 @@ export class AuthService {
     }
 
     logout() {
-        //this.user.next(null);
         this.store.dispatch(new AuthActions.Logout());
         this.router.navigate(['/auth']);
         localStorage.removeItem('userData');
@@ -126,8 +123,7 @@ export class AuthService {
             token, 
             expirationDate
         );
-        //this.user.next(user);
-        this.store.dispatch(new AuthActions.Login({
+        this.store.dispatch(new AuthActions.AthenticateSuccess({
             email, 
             userId, 
             token, 

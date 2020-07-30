@@ -19,6 +19,12 @@ export interface AuthResponseData {
 @Injectable()
 export class AuthEffects {
     @Effect()
+    authSignup = this.actions$.pipe(
+        ofType(AuthActions.SIGNUP_START),
+        
+    );
+
+    @Effect()
     authLogin = this.actions$.pipe(
         ofType(AuthActions.LOGIN_START),
         switchMap((authData: AuthActions.LoginStart) => {
@@ -33,7 +39,7 @@ export class AuthEffects {
             .pipe(
               map(resData => {  
                 const expirationDate = new Date(new Date().getTime() + +resData.expiresIn * 1000);    
-                return new AuthActions.Login({
+                return new AuthActions.AthenticateSuccess({
                     email: resData.email,
                     userId: resData.localId,
                     token: resData.idToken,
@@ -43,10 +49,10 @@ export class AuthEffects {
               catchError(errorRes => {
                 let errorMessage = "An unknown error occured!";
                 if(!errorRes.error || !errorRes.error.error) {
-                    return of(new AuthActions.LoginFail(errorMessage));
+                    return of(new AuthActions.AthenticateFail(errorMessage));
                 }
                 errorMessage = errorRes.error.error.message;
-                return of(new AuthActions.LoginFail(errorMessage));
+                return of(new AuthActions.AthenticateFail(errorMessage));
               })
             );
         })
@@ -54,7 +60,7 @@ export class AuthEffects {
 
     @Effect({dispatch: false})
     authSuccess = this.actions$.pipe(
-        ofType(AuthActions.LOGIN), 
+        ofType(AuthActions.AUTHENTICATE_SUCCESS), 
         tap(() => {
             this.router.navigate(['/']);
         })
