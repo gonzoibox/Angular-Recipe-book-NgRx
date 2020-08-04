@@ -9,7 +9,7 @@ export const CLEAR_ERROR = '[Auth] CLEAR_ERROR';
 export const AUTO_LOGIN = '[Auth] AUTO_LOGIN';
 export const LOGOUT = '[Auth] LOGOUT';
 
-export class AthenticateSuccess implements Action {
+export class AuthenticateSuccess implements Action {
     readonly type = AUTHENTICATE_SUCCESS;
 
     constructor(
@@ -18,6 +18,7 @@ export class AthenticateSuccess implements Action {
             userId: string;
             token: string;
             expirationDate: Date;
+            redirect: boolean;
         }
     ) {}
 }
@@ -32,7 +33,7 @@ export class LoginStart implements Action {
     constructor(public payload: {email: string, password: string}) {}
 }
 
-export class AthenticateFail implements Action {
+export class AuthenticateFail implements Action {
     readonly type = AUTHENTICATE_FAIL;
 
     constructor(public payload: string) {}
@@ -53,10 +54,10 @@ export class AutoLogin implements Action {
 }
 
 export type AuthActions = 
-| AthenticateSuccess 
+| AuthenticateSuccess 
 | Logout 
 | LoginStart 
-| AthenticateFail 
+| AuthenticateFail 
 | SignupStart
 | ClearError
 ;

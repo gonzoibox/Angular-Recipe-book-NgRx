@@ -32,21 +32,22 @@ const handleAuthentication = (
         expirationDate
     );  
     localStorage.setItem('userData', JSON.stringify(user));
-    return new AuthActions.AthenticateSuccess({
+    return new AuthActions.AuthenticateSuccess({
         email: email,
         userId: userId,
         token: token,
-        expirationDate: expirationDate
+        expirationDate: expirationDate,
+        redirect: true
     });
 };
 
 const handleError = (errorRes: any) => {
     let errorMessage = "An unknown error occured!";
         if(!errorRes.error || !errorRes.error.error) {
-            return of(new AuthActions.AthenticateFail(errorMessage));
+            return of(new AuthActions.AuthenticateFail(errorMessage));
         }
         errorMessage = errorRes.error.error.message;
-        return of(new AuthActions.AthenticateFail(errorMessage));
+        return of(new AuthActions.AuthenticateFail(errorMessage));
 };
 
 @Injectable()
@@ -116,8 +117,10 @@ export class AuthEffects {
     @Effect({dispatch: false})
     authSuccess= this.actions$.pipe(
         ofType(AuthActions.AUTHENTICATE_SUCCESS), 
-        tap(() => {
-            this.router.navigate(['/']);
+        tap((authSuccessAction: AuthActions.AuthenticateSuccess) => {
+            if(authSuccessAction.payload.redirect) {
+                this.router.navigate(['/']);
+            }
         })
     );
 
@@ -146,23 +149,23 @@ export class AuthEffects {
                     userData.email,
                     userData.id,
                     userData._token,
-                    new Date(userData._tokenExpirationDate)
+                    new Date(userData._tokenExpirationDate),
                 );
-    
-                if (loadedUser.token) {
-                    const expirationDuration = 
-                    new Date(userData._tokenExpirationDate).getTime() - new Date().getTime();
-                    this.authService.setLogoutTimer(expirationDuration);
-                    return new AuthActions.AthenticateSuccess({
-                        email: loadedUser.email,
-                        userId: loadedUser.id,
-                        token: loadedUser.token,
-                        expirationDate: new Date(userData._tokenExpirationDate)
-                    });
-                } 
-            } else return {type: 'ANY'};
+            if (loadedUser.token) {
+                const expirationDuration = 
+                new Date(userData._tokenExpirationDate).getTime() - new Date().getTime();
+                this.authService.setLogoutTimer(expirationDuration);
+                return new AuthActions.AuthenticateSuccess({
+                    email: loadedUser.email,
+                    userId: loadedUser.id,
+                    token: loadedUser.token,
+                    expirationDate: new Date(userData._tokenExpirationDate),
+                    redirect: false
+                });
+            } 
+            } return {type: 'ANY'};
         })
-    )
+    );
 
     constructor(private actions$: Actions,
                 private http: HttpClient,
